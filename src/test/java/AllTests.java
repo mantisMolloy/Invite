@@ -13,8 +13,7 @@ import util.InviteHelperTest;
         PersonTest.class,
         LawOfCosinesTest.class,
         LocationTest.class,
-        InviteHelperTest.class,
-        AppTest.class
+        InviteHelperTest.class
 })
 public class AllTests {
 }

@@ -13,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 
 /**
@@ -29,6 +32,8 @@ public class InviteHelper {
 
     private DistanceFormula distanceStrategy;
     private Location location;
+    private double requiredDistance;
+
 
     /**
      * Set default distanceStrategy to lawOfCosines
@@ -37,12 +42,14 @@ public class InviteHelper {
     public InviteHelper(){
         distanceStrategy = new LawOfCosines();
         location = new Location(PARTY_LATITUDE, PARTY_LONGITUDE);
+        requiredDistance = 100D;
     }
+
 
     /**
      *  Map a json encoded string to an Optional<Person>
      *  All values must be present in json string.
-     *  null b#values not allowed.
+     *  null values not allowed.
      *  unknown properties not allowed.
      * @param jsonString not null
      * @return Optional<Person>
@@ -69,14 +76,15 @@ public class InviteHelper {
         return person;
     }
 
+
+
     /**
      * check if a person is within a certain location of the helpers currently
      * set location (default party location)
      * @param person
-     * @param requiredDistance in km
      * @return boolean
      */
-    public Boolean isWithin(Person person, double requiredDistance){
+    public Boolean isWithin(Person person){
         Location personsLocation;
         try {
             personsLocation = new Location(person.getLatitude(), person.getLongitude());
@@ -93,12 +101,49 @@ public class InviteHelper {
         return dist < requiredDistance;
     }
 
+
+    /**
+     *  Prints a list of invites based on current class configuration
+     * @param file
+     * @return
+     */
+    public long printInvites(File file){
+
+        long count = 0;
+
+        System.out.println("The following people are cordially invited to our Box Social\n-----");
+        try {
+            count = Files.lines(file.toPath())
+                    .map(this::json2Person)
+                    .filter(Optional::isPresent)   // in JDK 9 we these 2 lines
+                    .map(Optional::get)            // as '.flatMap(Optional::stream)'
+                    .filter(this::isWithin)
+                    .sorted()
+                    .peek(System.out::println)
+                    .count();
+        } catch (IOException e) {
+            logger.error("Error reading file", e);
+        }catch (Exception e){
+            logger.error("Error creating invites", e);
+        }
+        return count;
+    }
+
+
+    public double getRequiredDistance() {
+        return requiredDistance;
+    }
+
+
+    public void setRequiredDistance(double requiredDistance) {
+        this.requiredDistance = requiredDistance;
+    }
+
     public DistanceFormula getDistanceStrategy() {
         return distanceStrategy;
     }
 
     /**
-     *
      * @param distanceStrategy not null
      */
     public void setDistanceStrategy(DistanceFormula distanceStrategy) {
@@ -111,7 +156,6 @@ public class InviteHelper {
     }
 
     /**
-     *
      * @param location not null
      */
     public void setLocation(Location location) {

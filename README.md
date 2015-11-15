@@ -21,29 +21,37 @@ Users can easliy add their own formulas by implementing the `DistanceFormula` in
 Manipulating one json object
 
 
-```
-InviteHelper helper = new InviteHelper();
-Boolean within100Km = false;
+```java
+InviteHelper helper = new InviteHelper(); 
+final Boolean[] within100Km = {false};
 
 Optional<Person> OptPerson = helper.json2Person(someJsonString);
- 
-OptPerson.ifPresent(person -> within100Km = helper.isWithin(person, 100D));
+OptPerson.ifPresent(person -> within100Km = helper.isWithin(person));
 ```
 
-Stream from a file
+Or use the supplied method `printInvites` which will print all people invited based on default criteria to stout
 
-```
-count = Files.lines(file.toPath())
-                    .map(inviteHelper::json2Person)
-                    .filter(Optional::isPresent)   // in JDK 9 we these 2 lines
-                    .map(Optional::get)            // as '.flatMap(Optional::stream)'
-                    .filter(person -> inviteHelper.isWithin(person, 100D))
-                    .foreach(System.out::println);
-```
+```java
+InviteHelper helper = new InviteHelper();
 
-Or use the supplied method to `printInvites` using default law of cosines method and 100km from default party location
-
-```
 File input = new File("src/main/resources/people");
-long count = printInvites(input);
+long count = helper.printInvites(input);
+```
+
+Futhermore, we can change the location of the party, required distance, and which formula to use. Then we can do something else besides from print the people to stout.
+
+
+```java
+InviteHelper helper = new InviteHelper();
+helper.setDistanceStrategy(new LawOfCosines());
+helper.setLocation(new Location(43,90));
+helper.setRequiredDistance(200D);
+
+File input = new File("src/main/resources/people");
+Files.lines(input.toPath())
+        .map(helper::json2Person)
+        .filter(Optional::isPresent)   // in JDK 9 we these 2 lines
+        .map(Optional::get)            // as '.flatMap(Optional::stream)'
+        .filter(helper::isWithin)
+        .forEach(//do something with these people);
 ```

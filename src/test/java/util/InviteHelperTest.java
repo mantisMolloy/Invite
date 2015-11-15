@@ -8,6 +8,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import java.io.File;
 import java.util.Optional;
 
 /**
@@ -101,4 +102,18 @@ public class InviteHelperTest extends TestCase {
         helper.setDistanceStrategy(null);
     }
 
+    @Test
+    public void testPrintInvites(){
+        long result = helper.printInvites(new File("src/main/resources/people"));
+
+        assertTrue("should have 16 people: ", result == 16);
+    }
+
+
+    @Test
+    public void testBadFilePrintInvites(){
+        long result = helper.printInvites(new File("fakefile"));
+
+        assertTrue("should have 0 people: ", result == 0);
+    }
 }
