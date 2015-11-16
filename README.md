@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mantisMolloy/Invite.svg?branch=master)](https://travis-ci.org/mantisMolloy/Invite)
 # Invite
 
 Java app which reads text file of encoded json and outputs how many people are within 100km.
