@@ -5,7 +5,7 @@ Java app which reads text file of encoded json and outputs how many people are w
 
 ## Behavior
 
-Json encoded string is expected to be fully formed with no empyy or null arguments. Jsons strings missing properties will be ignored. Furthermore, json strings with extra properties will be ignored.
+Json encoded string is expected to be fully formed with no empty or null arguments. Json strings missing properties will be ignored. Furthermore, json strings with extra properties will be ignored.
 
 This behaviour is handled by the Jackson object mapper on json deserialization and object creation.
 
